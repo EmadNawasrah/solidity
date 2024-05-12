@@ -1,65 +1,100 @@
+
 const contract = require('truffle-contract');
 const XLSX = require("xlsx");
-const metacoin_artifact = null;
 const item_a = require('../build/contracts/Item.json');
-const { log } = require('console');
+
 var Item = contract(item_a);
+var contractAddress = ""; // Define contractAddress variable globally
+
+function readExcel(filePath) {
+  const workbook = XLSX.readFile(filePath);
+  const sheetName = workbook.SheetNames[0]; // Assuming we are reading the first sheet
+  const sheet = workbook.Sheets[sheetName];
+  const data = XLSX.utils.sheet_to_json(sheet);
+
+  return data;
+}
 
 module.exports = {
   checkProduct: function (productName, callback) {
     var self = this;
+
     // Bootstrap the Item abstraction for Use.
     Item.setProvider(self.web3.currentProvider);
 
-    Item.deployed().then(async function (instance) {
-      // console.log("add")
-      // let exlsxData = readExcel("/home/enawasrah/Desktop/emad/final.xlsx");
-      // // Array to store promises returned by addProduct calls
-      // let promises = [];
-      // for (const element of exlsxData) {
-      //   promises.push(instance.addProduct(element.porduct_name, element.category, element.boycott, { from: "0x48418f08E9F640773feFd5dff15F94e99072b5c1", gas: 6000000 }));
-      // }
+    // Ensure contractAddress is fetched before continuing
+    if (!contractAddress) {
+      console.error("Contract address not set. Please ensure you fetch accounts first.");
+      return;
+    }
 
-      // Wait for all addProduct calls to finish
-      // Promise.all(promises)
-      //   .then(function (results) {
-      //     console.log("All products added successfully!");
-      //     console.log(results);
-      //     callback({ "status": 200, "message": "Products added successfully!" });
-      //   })
-      //   .catch(function (error) {
-      //     console.error("Error adding products:", error);
-      //     callback({ "status": 500, "message": "Error adding products" });
-      //   });
-      products = await instance.getProductByName(productName, { from: "0x48418f08E9F640773feFd5dff15F94e99072b5c1" })
-      // products = JSON.stringify(products);
-      console.log(products)
-      // console.log("Products fetched successfully!");
+    Item.deployed().then(async function (instance) {
+      products = await instance.getProductByName(productName, { from: contractAddress });
+      console.log(products);
       callback({ "status": 200, "message": "Products fetched successfully!", "data": products });
     }).catch(function (e) {
       console.log(e);
       callback({ "status": 500, "message": "Product Not Found" });
     });
-  }
-  ,
- getProductsName: function (callback) {
+  },
+
+  getProductsName: function (callback) {
+    var self = this;
+    Item.setProvider(self.web3.currentProvider);
+
+    self.web3.eth.getAccounts(function (err, accs) {
+      if (err != null) {
+        console.log("There was an error fetching your accounts.");
+        console.log("Error fetching accounts:", err);
+        return;
+      }
+
+      if (accs.length == 0) {
+        console.log("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
+        return;
+      }
+      contractAddress = accs[0]; // Set contractAddress here
+
+      // Bootstrap the Item abstraction for Use.
+      Item.deployed().then(async function (instance) {
+        products = await instance.getAllProductNames({ from: contractAddress });
+        console.log(products);
+        callback({ "status": 200, "message": "Products fetched successfully!", "data": products });
+      }).catch(function (e) {
+        console.log(e);
+        callback({ "status": 201, "message": "Product Not Found" });
+      });
+    });
+  },
+  addProducts: function (callback) {
     var self = this;
     // Bootstrap the Item abstraction for Use.
     Item.setProvider(self.web3.currentProvider);
 
     Item.deployed().then(async function (instance) {
-      // let exlsxData = readExcel("/home/nawasrah/Desktop/emad/mytruffle/final.xlsx");
-      // postDataToGanache(exlsxData, instance)
-      // Call the getProducts function
-      products = await instance.getAllProductNames({ from: "0x48418f08E9F640773feFd5dff15F94e99072b5c1" })
-      // products = JSON.stringify(products);
-      console.log(products)
-      // console.log("Products fetched successfully!");
-      callback({ "status": 200, "message": "Products fetched successfully!", "data": products });
+      let exlsxData = readExcel("./final.xlsx");
+      console.log(exlsxData)
+
+      // ==========================================
+        let promises = [];
+      for (const element of exlsxData) {
+        promises.push(instance.addProduct(element.porduct_name, element.category, element.boycott, { from: "0x48418f08E9F640773feFd5dff15F94e99072b5c1", gas: 6000000 }));
+      }
+
+      // Wait for all addProduct calls to finish
+      Promise.all(promises)
+        .then(function (results) {
+          callback({ "status": 200, "message": "Products added successfully!" });
+        })
+        .catch(function (error) {
+          console.error("Error adding products:", error);
+          callback({ "status": 500, "message": "Error adding products" });
+        });
+      // =======================================================
+
     }).catch(function (e) {
       console.log(e);
-      callback({ "status": 201, "message": "Product Not Found" });
+      callback({ "status": 201, "message": "Products Not add" });
     });
   }
-  
-}
+};

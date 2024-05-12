@@ -42,6 +42,19 @@ app.get('/getAllProductNames', (req, res) => {
 });
 
 
+app.get('/addProducts', (req, res) => {
+  try {
+
+
+    truffle_connect.addProducts((answer) => {
+      res.send(answer);
+    });
+  } catch (error) {
+    console.log(error)
+  }
+});
+
+
 
 app.listen(port, () => {
 

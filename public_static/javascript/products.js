@@ -30,11 +30,11 @@ const testProcut = () => {
             $(".productName").text((JSON.parse(response.data)[0]));
             if (JSON.parse(response.data)[2] === "no") {
                 $(".result .row").addClass("goodProduct")
-                $(".productType").text("Not Moqat3")
+                $(".productType").text("Not Boycott")
             }
             if (JSON.parse(response.data)[2] === "yes") {
                 $(".result .row").addClass("padProduct")
-                $(".productType").text("Moqat3")
+                $(".productType").text(" Boycott")
 
             }
             $(".resultLoader").addClass("d-none")
