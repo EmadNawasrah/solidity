@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Products</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+  <!-- jquery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+    crossorigin="anonymous"></script>
+  <!-- Bootstrap css-->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+  <!-- bootstrap javascript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+  <link href="stylesheets/app.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+  <style>
+    #options {
+      height: 40px;
+      width: 90%;
+      font-size: 1.2em;
+    }
+
+    #selecttag {
+      font-size: 1.7em;
+    }
+
+    #submit {
+      width: 20%;
+      display: block;
+      margin: 20px auto;
+    }
+
+    .select,
+    .send,
+    #all-accounts {
+      display: none;
+    }
+
+    .active {
+      display: block !important;
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://cdn.datatables.net/2.0.5/css/dataTables.dataTables.css" />
+
+  <script src="https://cdn.datatables.net/2.0.5/js/dataTables.js"></script>
+</head>
+
+<body>
+  <!-- nav bar -->
+  <nav class="container-fluid bg-dark navbarc">
+    <div class="row">
+      <div class="col d-flex  align-items-center"><img class="hu" src="image/hu_logo-removebg-preview.png" width="70"
+          alt="hu logo"></div>
+      <div class="col text-danger d-flex justify-content-center h1">انتبه قاطع لا تدعم الاحتلال</div>
+      <div class="col d-flex justify-content-end align-items-center">
+        <svg class="triangle" xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" viewBox="0 0 24 24">
+          <path fill="red" d="M1 21h22L12 2" />
+        </svg>
+      </div>
+    </div>
+  </nav>
+  <!-- content -->
+  <div class="container-fluid content ">
+    <!-- flag -->
+    <div class="row flag my-5 justify-content-center">
+      <img src="image/Flag_of_Palestine.gif" class="w-25" width="70" height="70" alt="flage" srcset="">
+    </div>
+
+
+    <div class="row searchLoader">
+      <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" viewBox="0 0 24 24">
+        <circle cx="12" cy="2" r="0" fill="black">
+          <animate attributeName="r" begin="0" calcMode="spline" dur="1s"
+            keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0" />
+        </circle>
+        <circle cx="12" cy="2" r="0" fill="black" transform="rotate(45 12 12)">
+          <animate attributeName="r" begin="0.125s" calcMode="spline" dur="1s"
+            keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0" />
+        </circle>
+        <circle cx="12" cy="2" r="0" fill="black" transform="rotate(90 12 12)">
+          <animate attributeName="r" begin="0.25s" calcMode="spline" dur="1s"
+            keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0" />
+        </circle>
+        <circle cx="12" cy="2" r="0" fill="black" transform="rotate(135 12 12)">
+          <animate attributeName="r" begin="0.375s" calcMode="spline" dur="1s"
+            keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0" />
+        </circle>
+        <circle cx="12" cy="2" r="0" fill="black" transform="rotate(180 12 12)">
+          <animate attributeName="r" begin="0.5s" calcMode="spline" dur="1s"
+            keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0" />
+        </circle>
+        <circle cx="12" cy="2" r="0" fill="black" transform="rotate(225 12 12)">
+          <animate attributeName="r" begin="0.625s" calcMode="spline" dur="1s"
+            keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0" />
+        </circle>
+        <circle cx="12" cy="2" r="0" fill="black" transform="rotate(270 12 12)">
+          <animate attributeName="r" begin="0.75s" calcMode="spline" dur="1s"
+            keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0" />
+        </circle>
+        <circle cx="12" cy="2" r="0" fill="black" transform="rotate(315 12 12)">
+          <animate attributeName="r" begin="0.875s" calcMode="spline" dur="1s"
+            keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0" />
+        </circle>
+      </svg>
+    </div>
+
+    <div class="row d-none search">
+      <div class="col-12  d-flex justify-content-center">
+        <select class="js-example-basic-single w-50" id="selctBox" name="state">
+        </select>
+      </div>
+      <div class="col-12 d-flex justify-content-center mt-2">
+        <button type="button" id="testProudct" class="btn btn-outline-primary w-25">
+          Search
+        </button>
+      </div>
+    </div>
+    <div class="row justify-content-center mt-2 hamas d-none">
+      <svg class="triangle" xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" viewBox="0 0 24 24">
+        <path fill="red" d="M1 21h22L12 2"></path>
+      </svg>
+    </div>
+
+    <div class="row resultLoader mt-3 d-none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" viewBox="0 0 24 24">
+        <circle cx="12" cy="2" r="0" fill="black">
+          <animate attributeName="r" begin="0" calcMode="spline" dur="1s"
+            keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0" />
+        </circle>
+        <circle cx="12" cy="2" r="0" fill="black" transform="rotate(45 12 12)">
+          <animate attributeName="r" begin="0.125s" calcMode="spline" dur="1s"
+            keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0" />
+        </circle>
+        <circle cx="12" cy="2" r="0" fill="black" transform="rotate(90 12 12)">
+          <animate attributeName="r" begin="0.25s" calcMode="spline" dur="1s"
+            keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0" />
+        </circle>
+        <circle cx="12" cy="2" r="0" fill="black" transform="rotate(135 12 12)">
+          <animate attributeName="r" begin="0.375s" calcMode="spline" dur="1s"
+            keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0" />
+        </circle>
+        <circle cx="12" cy="2" r="0" fill="black" transform="rotate(180 12 12)">
+          <animate attributeName="r" begin="0.5s" calcMode="spline" dur="1s"
+            keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0" />
+        </circle>
+        <circle cx="12" cy="2" r="0" fill="black" transform="rotate(225 12 12)">
+          <animate attributeName="r" begin="0.625s" calcMode="spline" dur="1s"
+            keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0" />
+        </circle>
+        <circle cx="12" cy="2" r="0" fill="black" transform="rotate(270 12 12)">
+          <animate attributeName="r" begin="0.75s" calcMode="spline" dur="1s"
+            keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0" />
+        </circle>
+        <circle cx="12" cy="2" r="0" fill="black" transform="rotate(315 12 12)">
+          <animate attributeName="r" begin="0.875s" calcMode="spline" dur="1s"
+            keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0" />
+        </circle>
+      </svg>
+    </div>
+    <div class="container w-50 result mt-3  d-none">
+      <div class="row justify-content-center ">
+        <div class="col-12 my-2 text-center">Product Name: <span class="productName">Matrex</span></div>
+        <div class="col-12 catigory my-2 text-center"> Product Type: <span class="productType"></span></div>
+      </div>
+    </div>
+  </div>
+  <script src="javascript/products.js"></script>
+  <script>
+
+    async function fetchData() {
+      try {
+        const response = await $.ajax({
+          url: 'http://localhost:3000/getProducts',
+          method: 'GET',
+          dataType: 'json'
+        });
+
+        let data = []
+        data[0] = JSON.parse(response.data)
+        $('#myTable').DataTable({
+          data: data,
+        });
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
+
+    // Call the fetchData function to populate the table with data from the API
+    // fetchData();
+
+    const fetchProducts = async () => {
+      try {
+        const response = await $.ajax({
+          url: 'http://localhost:3000/getAllProductNames',
+          method: 'GET',
+          dataType: 'json'
+        });
+        $(".search").removeClass("d-none")
+        $(".searchLoader").addClass("d-none")
+        $('#selctBox').append(`<option value="">Please Write Product Name</option>`);
+        response.data.sort();
+        response.data.forEach(productName => {
+          $('#selctBox').append(`<option value="${productName}">${productName}</option>`);
+        });
+
+        $('#selctBox').select2()
+
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
+
+    fetchProducts();
+
+  </script>
+</body>
+
+</html>
