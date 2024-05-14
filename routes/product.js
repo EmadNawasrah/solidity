@@ -38,4 +38,9 @@ router.get('/getAllCategories', (req, res) => res.send({
         ]
 }
 ));
+
+router.post('/addNewProduct', (req, res) => res.send({
+    status: 200, message:"Added Product Successfully",data:{id:1}
+}
+));
 module.exports = router;
