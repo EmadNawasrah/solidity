@@ -1,0 +1,7 @@
+{
+    "projectName": "Mytruffle",
+    "namespace": "Mytruffle.Contracts",
+    "lang": 0,
+    "autoCodeGen": true,
+    "projectPath": "../"
+}
