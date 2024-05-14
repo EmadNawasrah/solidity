@@ -18,22 +18,14 @@
         <table class="table table-bordered " id="productsTable">
             <thead class="table-dark">
                 <tr>
-                    <th scope="col">Column 1</th>
-                    <th scope="col">Column 2</th>
-                    <th scope="col">Column 3</th>
+                    <th scope="col">#</th>
+                    <th scope="col">Product Name</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Product Type</th>
+                    <th scope="col">Action</th>
                 </tr>
             </thead>
             <tbody>
-                <tr class="">
-                    <td scope="row">R1C1</td>
-                    <td>R1C2</td>
-                    <td>R1C3</td>
-                </tr>
-                <tr class="">
-                    <td scope="row">Item</td>
-                    <td>Item</td>
-                    <td>Item</td>
-                </tr>
             </tbody>
         </table>
     </div>
@@ -61,20 +53,16 @@
 
                     <div class="form-floating mb-3 col-6">
                         <select class="form-select form-select-lg" name="category" id="category">
-                            <option selected>Select one</option>
-                            <option value="">New Delhi</option>
-                            <option value="">Istanbul</option>
-                            <option value="">Jakarta</option>
+                            <option selected>Select Category</option>
                         </select>
                         <label for="category">Category Name</label>
                     </div>
 
                     <div class="form-floating mb-3 col-6">
                         <select class="form-select form-select-lg" name="productType" id="productType">
-                            <option selected>Select one</option>
-                            <option value="">New Delhi</option>
-                            <option value="">Istanbul</option>
-                            <option value="">Jakarta</option>
+                            <option selected>Select Type</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
                         </select>
                         <label for="productType">Product Type</label>
                     </div>
@@ -92,12 +80,89 @@
 </div>
 
 
-<script>
+<!-- delete Product Modal -->
+<div class="modal fade" id="delelteProduct" tabindex="-1" aria-labelledby="delelteProductLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="delelteProductLabel">Delete Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="delelteProductForm" class="row justify-content-center"
+                    action="<?= CONTROLLERS_URL ?>Admin/ProductController.php?action=deleteProduct" method="post">
+                    <div id="idContainer" class="form-floating mb-3 d-none">
+                        <input type="text" class="form-control " name="id" id="id" placeholder="id like 120182201095"
+                            readonly>
+                        <label for="id">Id</label>
+                    </div>
 
-    const afterFetchProducts = () => {
-        $(".productsTableContainer , .addProductContainer").removeClass("d-none")
-        $(".loaderContainer").addClass("d-none")
-        $("#productsTable").DataTable();
+                    <div id="message" class="row my-2 justify-content-center"></div>
+                    <button type="submit" class="btn btn-danger w-50">Delete Product</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    const fetchCategories = () => {
+        var settings = {
+            "url": "/admin/product/getAllCategories",
+            "method": "GET",
+            "timeout": 0,
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        };
+
+        $.ajax(settings).done(function (response) {
+            if(response.status!==200)return 0;
+            response.data.forEach((category,index)=>{
+                $("#category").append(`
+                    <option value="${category}">${category}</option>
+                `);
+            })
+        });
+
+    }
+    const fetchProducts = () => {
+        var settings = {
+            "url": "/admin/product/getAllProducts",
+            "method": "GET",
+            "timeout": 0,
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        };
+
+        $.ajax(settings).done(function (response) {
+            if(response.status!==200)return 0;
+            $(".productsTableContainer , .addProductContainer").removeClass("d-none")
+            $(".loaderContainer").addClass("d-none")
+            let table = $("#productsTable").DataTable();
+            table.clear();
+            response.data.forEach(function (product) {
+                table.row.add([
+                    product.id,
+                    product.product_name,
+                    product.category,
+                    product.product_type,
+                    `
+                    <a  data-all='${JSON.stringify(product)}' class="updateProductButton btn btn-success">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="4"><path stroke-linecap="round" d="M6 5v25.004h36V5"/><path d="M15 23h4.002l13.85-14.143L28.993 5L15 19.143z"/><path stroke-linecap="round" d="m30 37l-6 6l-6-6m6-7v13"/></g></svg>
+                    </a>
+                    <a  data-id="${product.id}" class=" deleteProductButton  btn btn-danger">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><path fill="currentColor" d="M9 17h2V8H9zm4 0h2V8h-2zm-8 4V6H4V4h5V3h6v1h5v2h-1v15z"/></svg>
+                    </a>
+                    `,
+                ]).draw(false);
+            });
+            onClickUpdateProductButton();
+            onClickDeleteProductButton();
+        });
+
     }
     const onSubmitAddProduct = () => {
         $("#addProductForm").on("submit", function (event) {
@@ -114,11 +179,33 @@
         })
     }
     $(() => {
-
         onSubmitAddProduct();
-        setTimeout(() => {
-            afterFetchProducts();
-        }, 1000);
-
+        fetchProducts();
+        fetchCategories()
     })
+    const onClickUpdateProductButton = () => {
+        let target = $('.updateProductButton');
+        if (target.length <= 0) return 0;
+        target.off("click");
+        target.on("click", function (e) {
+            let modal = $("#updateProduct");
+            let allData = JSON.parse($(this).attr("data-all"));
+
+
+            $.each(allData, (index, data) => {
+                setDataToElement(modal.find("#" + index + ""), data);
+            });
+            modal.modal("show");
+        });
+    }
+    const onClickDeleteProductButton = () => {
+        let target = $('.deleteProductButton');
+        if (target.length <= 0) return 0;
+        target.off("click");
+        target.on("click", function (e) {
+            let modal = $("#delelteProduct");
+            $(modal.find("#id")).val($(this).attr("data-id"));
+            modal.modal("show");
+        });
+    }
 </script>

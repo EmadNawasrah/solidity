@@ -59,6 +59,8 @@ app.use(function (req, res, next) {
 // Routes
 app.use('/', require('./routes/index.js'));
 app.use('/admin', require('./routes/admin.js'));
+app.use('/admin/product', require('./routes/product.js'));
+
 app.use("/", express.static("public")); // For serving static files
 app.use(cors());
 // parse application/x-www-form-urlencoded
@@ -89,8 +91,6 @@ app.get('/getAllProductNames', (req, res) => {
     console.log(error)
   }
 });
-
-
 app.get('/addProducts', (req, res) => {
   try {
 
@@ -104,8 +104,6 @@ app.get('/addProducts', (req, res) => {
 });
 app.get('/getAllCategories', (req, res) => {
   try {
-
-
     truffle_connect.getAllCategories((answer) => {
       res.send(answer);
     });

@@ -238,4 +238,35 @@ contract Item {
     function getAllCategories() public view returns (string[] memory) {
         return categorys;
     }
+
+    contract Item {
+    // Existing code...
+
+    // Function to update product data by ID
+    function updateProductById(
+        uint _id,
+        string memory _productName,
+        string memory _category,
+        string memory _boycott
+    ) public {
+        require(_id < products.length, "Product ID does not exist");
+        products[_id].productName = _productName;
+        products[_id].category = _category;
+        products[_id].boycott = _boycott;
+    }
+
+    // Function to add category to the categories array
+    function addCategory(string memory _category) public {
+        categorys.push(_category);
+    }
+
+    // Function to delete product by ID
+    function deleteProductById(uint _id) public {
+        require(_id < products.length, "Product ID does not exist");
+        for (uint i = _id; i < products.length - 1; i++) {
+            products[i] = products[i + 1];
+        }
+        products.pop();
+    }
+}
 }
