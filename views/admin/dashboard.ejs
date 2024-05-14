@@ -1,0 +1,124 @@
+<div class="row mt-2"></div>
+
+<div class="d-none row justify-content-center addProductContainer">
+    <button type="button" class="btn btn-outline-primary  w-25" data-bs-toggle="modal"
+        data-bs-target="#addProductsModel">
+        Add Product
+    </button>
+</div>
+
+<div class="row justify-content-center align-items-center h-100 loaderContainer">
+    <div class="col d-flex justify-content-center align-items-center">
+        <img src="/image/loader.svg" width="100" height="100" id="pageLoader" alt="" srcset="">
+    </div>
+</div>
+
+<div class="d-none row mt-5 mx-1 productsTableContainer">
+    <div class="table-responsive">
+        <table class="table table-bordered " id="productsTable">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">Column 1</th>
+                    <th scope="col">Column 2</th>
+                    <th scope="col">Column 3</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="">
+                    <td scope="row">R1C1</td>
+                    <td>R1C2</td>
+                    <td>R1C3</td>
+                </tr>
+                <tr class="">
+                    <td scope="row">Item</td>
+                    <td>Item</td>
+                    <td>Item</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- Modal Body -->
+<!-- if you want to close by clicking outside the modal, delete the last endpoint:data-bs-backdrop and data-bs-keyboard -->
+<div class="modal fade" id="addProductsModel" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+    role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitleId">
+                    Add Product
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="" method="post" id="addProductForm" class="row">
+                    <div class="form-floating mb-3 col-12">
+                        <input type="text" class="form-control" name="productName" id="productName" placeholder="" />
+                        <label for="productName">Product Name</label>
+                    </div>
+
+                    <div class="form-floating mb-3 col-6">
+                        <select class="form-select form-select-lg" name="category" id="category">
+                            <option selected>Select one</option>
+                            <option value="">New Delhi</option>
+                            <option value="">Istanbul</option>
+                            <option value="">Jakarta</option>
+                        </select>
+                        <label for="category">Category Name</label>
+                    </div>
+
+                    <div class="form-floating mb-3 col-6">
+                        <select class="form-select form-select-lg" name="productType" id="productType">
+                            <option selected>Select one</option>
+                            <option value="">New Delhi</option>
+                            <option value="">Istanbul</option>
+                            <option value="">Jakarta</option>
+                        </select>
+                        <label for="productType">Product Type</label>
+                    </div>
+
+                    <div class="col d-flex justify-content-center buttonSubmitContainer">
+                        <button type="submit" class="btn btn-primary">
+                            Submit
+                        </button>
+                        <img src="/image/loader.svg" class="d-none loader" alt="" srcset="">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    const afterFetchProducts = () => {
+        $(".productsTableContainer , .addProductContainer").removeClass("d-none")
+        $(".loaderContainer").addClass("d-none")
+        $("#productsTable").DataTable();
+    }
+    const onSubmitAddProduct = () => {
+        $("#addProductForm").on("submit", function (event) {
+            event.preventDefault();
+            let submitButton = $(this).find("button");
+            let loader = $(this).find(".loader");
+            $(submitButton).addClass("d-none");
+            $(loader).removeClass("d-none");
+
+            setTimeout(() => {
+                $(submitButton).removeClass("d-none");
+                $(loader).addClass("d-none");
+            }, 1000);
+        })
+    }
+    $(() => {
+
+        onSubmitAddProduct();
+        setTimeout(() => {
+            afterFetchProducts();
+        }, 1000);
+
+    })
+</script>
