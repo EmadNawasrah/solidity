@@ -25,7 +25,7 @@ var con = mysql.createConnection({
   database: 'solidity'
 });
 
-con.connect();
+// con.connect();
 
 // EJS
 app.use(expressLayouts);

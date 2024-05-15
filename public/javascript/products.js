@@ -38,7 +38,7 @@ const testProcut = () => {
 
         const productName = $("#selctBox").val();
         
-        $('#myTable').DataTable().clear();
+        // $('#myTable').DataTable().clear();
         $.post('http://localhost:3000/checkProduct', { product: productName }, function (response) {
             if (response.status !== 200) {
                 $(".resultLoader").addClass("d-none")
@@ -49,13 +49,13 @@ const testProcut = () => {
 
                 return 0;
             }
-            $(".productName").text((JSON.parse(response.data)[0]));
-            category=JSON.parse(response.data)[1]
-            if (JSON.parse(response.data)[2] === "no") {
+            $(".productName").text(((response.data)[0]));
+            category=(response.data)[1]
+            if ((response.data)[2] === "no") {
                 $(".result .row").addClass("goodProduct")
                 $(".productType").text("Not Boycott")
             }
-            if (JSON.parse(response.data)[2] === "yes") {
+            if ((response.data)[2] === "yes") {
                 $(".result .row").addClass("padProduct")
                 $(".productType").text(" Boycott")
 

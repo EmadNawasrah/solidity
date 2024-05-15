@@ -1,4 +1,6 @@
-
+function removeEmptyStringsFromArray(arr) {
+    return arr.filter(str => str.trim() !== "");
+  }
 const fetchCategories = () => {
     var settings = {
         "url": "/admin/product/getAllCategories",
@@ -11,7 +13,7 @@ const fetchCategories = () => {
 
     $.ajax(settings).done(function (response) {
         if (response.status !== 200) return 0;
-        response.data.forEach((category, index) => {
+        response.categories.forEach((category, index) => {
             $("#category").append(`
                 <option value="${category}">${category}</option>
             `);
@@ -35,17 +37,16 @@ const fetchProducts = () => {
         $(".loaderContainer").addClass("d-none")
         let table = $("#productsTable").DataTable();
         table.clear();
-        response.data.forEach(function (product) {
+        let products=removeEmptyStringsFromArray(response.data)
+        console.log(products)
+        products.forEach(function (product) {
             table.row.add([
-                product.id,
-                product.product_name,
-                product.category,
-                product.product_type,
+                product,
                 `
-                <a  data-all='${JSON.stringify(product)}' class="updateProductButton btn btn-success">
+                <a  data-all='${product}' class="updateProductButton btn btn-success">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="4"><path stroke-linecap="round" d="M6 5v25.004h36V5"/><path d="M15 23h4.002l13.85-14.143L28.993 5L15 19.143z"/><path stroke-linecap="round" d="m30 37l-6 6l-6-6m6-7v13"/></g></svg>
                 </a>
-                <a  data-id="${product.id}" class=" deleteProductButton  btn btn-danger">
+                <a  data-id="${product}" class=" deleteProductButton  btn btn-danger">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><path fill="currentColor" d="M9 17h2V8H9zm4 0h2V8h-2zm-8 4V6H4V4h5V3h6v1h5v2h-1v15z"/></svg>
                 </a>
                 `,
@@ -107,7 +108,7 @@ $(() => {
     onSubmitAddProduct();
     fetchProducts();
     fetchCategories()
-
+    deleteProduct()
 })
 const onClickUpdateProductButton = () => {
     let target = $('.updateProductButton');
@@ -133,4 +134,18 @@ const onClickDeleteProductButton = () => {
         $(modal.find("#id")).val($(this).attr("data-id"));
         modal.modal("show");
     });
+}
+const deleteProduct=()=>{
+    $("#delelteProductForm").on("submit",function(e){
+        e.preventDefault();
+        var settings = {
+            "url": "/admin/product/deleteProduct",
+            "method": "POST",
+            "timeout": 0,
+            "data": {productName:$("#id").val()},
+        };
+        $.ajax(settings).done(function (response) {
+
+        })
+    })
 }

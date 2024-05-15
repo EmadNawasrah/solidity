@@ -1,20 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract Migrations {
-    address public owner;
-    uint public lastCompletedMigration;
-
-    modifier restricted() {
-        require(msg.sender == owner, "Only the owner can call this function");
-        _;
-    }
-
-    function setCompleted(uint completed) public restricted {
-        lastCompletedMigration = completed;
-    }
-}
-
 contract Item {
     struct Product {
         string productName;
@@ -22,251 +8,90 @@ contract Item {
         string boycott;
     }
 
-    Product[] public products;
-    string[] public categorys;
-    function addProductN() public returns (bool sufficient) {
-        addProduct("test3", "category3", "alternative3");
-        return true;
-    }
+    mapping(uint => Product) public products;
+    mapping(string => uint) private productIndex;
+    mapping(string => bool) private categoryExists;
+    string[] public categories;
+    uint public productCount;
+
+    event ProductAdded(uint productId, string productName, string category, string boycott);
+    event ProductDeleted(uint productId, string productName);
 
     function addProduct(
         string memory _productName,
         string memory _category,
         string memory _boycott
     ) public {
-        bool categoryExists = false;
-        for (uint i = 0; i < categorys.length; i++) {
-            if (
-                keccak256(abi.encodePacked(categorys[i])) ==
-                keccak256(abi.encodePacked(_category))
-            ) {
-                categoryExists = true;
-                break;
-            }
+        if (!categoryExists[_category]) {
+            categories.push(_category);
+            categoryExists[_category] = true;
         }
-        if (!categoryExists) {
-            categorys.push(_category);
-        }
-        products.push(Product(_productName, _category, _boycott));
+        products[productCount] = Product(_productName, _category, _boycott);
+        productIndex[_productName] = productCount;
+
+        emit ProductAdded(productCount, _productName, _category, _boycott);
+
+        productCount++;
     }
 
-    function getProducts() public view returns (string memory) {
-        string memory jsonString = " [";
+    function deleteProductByName(string memory _productName) public {
+        uint index = productIndex[_productName];
+        require(index < productCount, "Product not found");
 
-        for (uint i = 0; i < products.length; i++) {
-            jsonString = string(abi.encodePacked(jsonString, ""));
-            jsonString = string(
-                abi.encodePacked(jsonString, "", products[i].productName, '",')
-            );
-            jsonString = string(
-                abi.encodePacked(jsonString, "", products[i].category, '",')
-            );
-            jsonString = string(
-                abi.encodePacked(jsonString, "", products[i].boycott, '"')
-            );
-            jsonString = string(abi.encodePacked(jsonString, ""));
-            if (i < products.length - 1) {
-                jsonString = string(abi.encodePacked(jsonString, ","));
-            }
-        }
-        jsonString = string(abi.encodePacked(jsonString, "]"));
+        emit ProductDeleted(index, _productName);
 
-        return jsonString;
+        delete products[index];
+        delete productIndex[_productName];
     }
 
-    function getProductNameById(uint _id) public view returns (string memory) {
-        require(_id < products.length, "Product ID does not exist");
-        return products[_id].productName;
-    }
-
-    function getProductByName(
-        string memory _name
-    ) public view returns (string memory) {
-        for (uint i = 0; i < products.length; i++) {
-            if (
-                keccak256(abi.encodePacked(products[i].productName)) ==
-                keccak256(abi.encodePacked(_name))
-            ) {
-                string memory jsonString = "[";
-                jsonString = string(
-                    abi.encodePacked(
-                        jsonString,
-                        '"',
-                        products[i].productName,
-                        '",'
-                    )
-                );
-                jsonString = string(
-                    abi.encodePacked(
-                        jsonString,
-                        '"',
-                        products[i].category,
-                        '",'
-                    )
-                );
-                jsonString = string(
-                    abi.encodePacked(jsonString, '"', products[i].boycott, '"')
-                );
-                jsonString = string(abi.encodePacked(jsonString, "]"));
-                return jsonString;
-            }
-        }
-        revert("Product not found");
-    }
     function getAllProductNames() public view returns (string[] memory) {
-        string[] memory productNames = new string[](products.length);
-        for (uint i = 0; i < products.length; i++) {
-            productNames[i] = products[i].productName;
+        string[] memory productNames = new string[](productCount);
+        uint counter = 0;
+        for (uint i = 0; i < productCount; i++) {
+            if (bytes(products[i].productName).length != 0) {
+                productNames[counter] = products[i].productName;
+                counter++;
+            }
         }
         return productNames;
     }
 
-    function getProductsByCategory(
-        string memory _category,
-        uint _numberOfProducts
-    ) public view returns (string memory) {
-        require(
-            _numberOfProducts >= 0,
-            "Number of products cannot be negative"
-        );
-
-        string memory jsonString = "[";
+    function getProductsByCategory(string memory _category) public view returns (string[] memory, string[] memory, string[] memory) {
         uint count = 0;
-
-        for (uint i = 0; i < products.length; i++) {
-            if (
-                keccak256(abi.encodePacked(products[i].category)) ==
-                keccak256(abi.encodePacked(_category))
-            ) {
-                jsonString = string(abi.encodePacked(jsonString, "{"));
-                jsonString = string(
-                    abi.encodePacked(
-                        jsonString,
-                        '"productName":"',
-                        products[i].productName,
-                        '",'
-                    )
-                );
-                jsonString = string(
-                    abi.encodePacked(
-                        jsonString,
-                        '"category":"',
-                        products[i].category,
-                        '",'
-                    )
-                );
-                jsonString = string(
-                    abi.encodePacked(
-                        jsonString,
-                        '"boycott":"',
-                        products[i].boycott,
-                        '"'
-                    )
-                );
-                jsonString = string(abi.encodePacked(jsonString, "}"));
+        for (uint i = 0; i < productCount; i++) {
+            if (keccak256(abi.encodePacked(products[i].category)) == keccak256(abi.encodePacked(_category))) {
                 count++;
-                if (_numberOfProducts != 0 && count >= _numberOfProducts) {
-                    break;
-                }
-                if (i < products.length - 1) {
-                    jsonString = string(abi.encodePacked(jsonString, ","));
-                }
             }
         }
 
-        jsonString = string(abi.encodePacked(jsonString, "]"));
-        return jsonString;
-    }
-    function getProductsByCategoryWhenNotBoycott(
-        string memory _category,
-        uint _numberOfProducts
-    ) public view returns (string memory) {
-        require(
-            _numberOfProducts >= 0,
-            "Number of products cannot be negative"
-        );
+        string[] memory productNames = new string[](count);
+        string[] memory productCategories = new string[](count);
+        string[] memory productBoycotts = new string[](count);
 
-        string memory jsonString = "[";
-        uint count = 0;
-
-        for (uint i = 0; i < products.length; i++) {
-            if (
-                keccak256(abi.encodePacked(products[i].category)) ==
-                keccak256(abi.encodePacked(_category)) &&
-                keccak256(abi.encodePacked(products[i].boycott)) ==
-                keccak256(abi.encodePacked("no"))
-            ) {
-                jsonString = string(abi.encodePacked(jsonString, "{"));
-                jsonString = string(
-                    abi.encodePacked(
-                        jsonString,
-                        '"productName":"',
-                        products[i].productName,
-                        '",'
-                    )
-                );
-                jsonString = string(
-                    abi.encodePacked(
-                        jsonString,
-                        '"category":"',
-                        products[i].category,
-                        '",'
-                    )
-                );
-                jsonString = string(
-                    abi.encodePacked(
-                        jsonString,
-                        '"boycott":"',
-                        products[i].boycott,
-                        '"'
-                    )
-                );
-                jsonString = string(abi.encodePacked(jsonString, "}"));
-                count++;
-                if (_numberOfProducts != 0 && count >= _numberOfProducts) {
-                    break;
-                }
-                if (i < products.length - 1) {
-                    jsonString = string(abi.encodePacked(jsonString, ","));
-                }
+        uint index = 0;
+        for (uint i = 0; i < productCount; i++) {
+            if (keccak256(abi.encodePacked(products[i].category)) == keccak256(abi.encodePacked(_category))) {
+                productNames[index] = products[i].productName;
+                productCategories[index] = products[i].category;
+                productBoycotts[index] = products[i].boycott;
+                index++;
             }
         }
 
-        jsonString = string(abi.encodePacked(jsonString, "]"));
-        return jsonString;
+        return (productNames, productCategories, productBoycotts);
     }
+
     function getAllCategories() public view returns (string[] memory) {
-        return categorys;
+        return categories;
     }
-
-    contract Item {
-    // Existing code...
-
-    // Function to update product data by ID
-    function updateProductById(
-        uint _id,
-        string memory _productName,
-        string memory _category,
-        string memory _boycott
-    ) public {
-        require(_id < products.length, "Product ID does not exist");
-        products[_id].productName = _productName;
-        products[_id].category = _category;
-        products[_id].boycott = _boycott;
-    }
-
-    // Function to add category to the categories array
-    function addCategory(string memory _category) public {
-        categorys.push(_category);
-    }
-
-    // Function to delete product by ID
-    function deleteProductById(uint _id) public {
-        require(_id < products.length, "Product ID does not exist");
-        for (uint i = _id; i < products.length - 1; i++) {
-            products[i] = products[i + 1];
-        }
-        products.pop();
-    }
+    function checkProduct(string memory _productName) public view returns (string memory productName, string memory category, string memory boycott) {
+    uint index = productIndex[_productName];
+    require(index < productCount, "Product not found");
+    
+    Product memory foundProduct = products[index];
+    
+    productName = foundProduct.productName;
+    category = foundProduct.category;
+    boycott = foundProduct.boycott;
 }
 }
